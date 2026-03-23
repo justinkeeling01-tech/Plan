@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Justin's Master Plan</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#f7f7f5; --surface:#fff; --border:#e4e4e0;
+  --text:#1a1a1a; --muted:#666; --hint:#999;
+  --green-bg:#E1F5EE; --green-t:#0F6E56; --green-b:#5DCAA5;
+  --amber-bg:#FAEEDA; --amber-t:#633806;
+  --purple-bg:#EEEDFE; --purple-t:#3C3489;
+  --blue-bg:#E6F1FB; --blue-t:#0C447C;
+  --pink-bg:#FBEAF0; --pink-t:#72243E;
+  --red-bg:#FCEBEB; --red-t:#A32D2D;
+  --warn-bg:#FFF8E6; --warn-t:#8a5c00;
+  --coral-bg:#FAECE7; --coral-t:#712B13;
+  --peak-bg:#E8E7FD; --peak-t:#26215C;
+  --goal-bg:#f0faf5; --goal-t:#0a7a4a;
+  --push-bg:#FAECE7; --push-t:#712B13;
+  --pull-bg:#EEEDFE; --pull-t:#3C3489;
+  --lower-bg:#E1F5EE; --lower-t:#0F6E56;
+  --cardio-bg:#FAEEDA; --cardio-t:#633806;
+  --full-bg:#FBEAF0; --full-t:#72243E;
+  --free-bg:#F1EFE8; --free-t:#444441;
+  --food-bg:#EAF3DE; --food-t:#27500A;
+  --sie-bg:#FAEEDA; --sie-t:#633806;
+  --career-bg:#EEEDFE; --career-t:#3C3489;
+}
+@media (prefers-color-scheme:dark) {
+  :root { --bg:#1a1a18; --surface:#242422; --border:#333; --text:#f0f0ec; --muted:#aaa; --hint:#666; }
+}
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--text); }
+.app { max-width:600px; margin:0 auto; padding-bottom:60px; }
+
+/* HEADER */
+.hdr { padding:18px 16px 8px; }
+.hdr h1 { font-size:21px; font-weight:700; }
+.hdr p { font-size:12px; color:var(--muted); margin-top:2px; }
+
+/* SHAKE BANNER */
+.shake-banner { margin:0 16px 0; background:var(--green-bg); border:2px solid var(--green-b); border-radius:12px; padding:10px 13px; }
+.shake-banner b { font-size:13px; color:#085041; display:block; }
+.shake-banner span { font-size:12px; color:var(--green-t); display:block; margin-top:2px; }
+.shake-banner em { font-size:11px; color:var(--green-t); display:block; margin-top:3px; font-style:normal; font-weight:600; }
+
+/* TOP NAV — two sections */
+.top-nav { display:flex; border-bottom:2px solid var(--border); padding:0 16px; margin-top:12px; background:var(--bg); }
+.top-btn { flex:1; padding:11px 8px; font-size:14px; font-weight:700; border:none; background:none; color:var(--muted); cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; text-align:center; }
+.top-btn.active { color:var(--text); border-bottom-color:var(--text); }
+.top-panel { display:none; }
+.top-panel.active { display:block; }
+
+/* SUB NAV — tabs within a section */
+.sub-nav { position:sticky; top:0; z-index:50; background:var(--bg); border-bottom:1px solid var(--border); display:flex; overflow-x:auto; scrollbar-width:none; padding:0 8px; }
+.sub-nav::-webkit-scrollbar { display:none; }
+.sub-btn { flex-shrink:0; padding:9px 11px; font-size:13px; font-weight:500; border:none; background:none; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; white-space:nowrap; }
+.sub-btn.active { color:var(--text); border-bottom-color:var(--text); }
+.sub-page { display:none; padding:14px 16px; }
+.sub-page.active { display:block; }
+
+/* INNER TABS (day tabs inside schedule) */
+.day-nav { position:sticky; top:42px; z-index:40; background:var(--bg); border-bottom:1px solid var(--border); display:flex; overflow-x:auto; scrollbar-width:none; padding:0 8px; }
+.day-nav::-webkit-scrollbar { display:none; }
+.day-btn { flex-shrink:0; padding:8px 10px; font-size:12px; font-weight:500; border:none; background:none; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; white-space:nowrap; }
+.day-btn.active { color:var(--text); border-bottom-color:var(--text); }
+.day-page { display:none; padding:14px 16px; }
+.day-page.active { display:block; }
+
+/* NOTE BOXES */
+.note { border-radius:10px; padding:10px 13px; font-size:13px; line-height:1.5; margin-bottom:14px; }
+.n-green { background:var(--green-bg); color:var(--green-t); }
+.n-amber { background:var(--warn-bg); color:var(--warn-t); }
+.n-blue { background:var(--blue-bg); color:var(--blue-t); }
+.n-pink { background:var(--pink-bg); color:var(--pink-t); }
+.n-goal { background:var(--goal-bg); color:var(--goal-t); }
+.n-red { background:var(--red-bg); color:var(--red-t); }
+
+/* SECTION LABEL */
+.lbl { font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--hint); margin:14px 0 6px; }
+
+/* SCHEDULE BLOCK */
+.block { display:flex; align-items:stretch; border-radius:10px; border:1px solid var(--border); overflow:hidden; margin-bottom:7px; background:var(--surface); }
+.bar { width:4px; flex-shrink:0; }
+.block-body { flex:1; padding:9px 11px; }
+.b-time { font-size:11px; color:var(--hint); margin-bottom:2px; }
+.b-label { font-size:14px; font-weight:600; }
+.b-notes { font-size:12px; color:var(--muted); margin-top:3px; line-height:1.4; }
+.b-tag { display:inline-block; font-size:11px; font-weight:600; padding:2px 9px; border-radius:99px; margin-top:5px; }
+.b-ex { font-size:12px; color:var(--muted); margin-top:5px; line-height:1.6; }
+.b-muscle { font-size:11px; font-weight:600; color:var(--muted); margin-top:4px; }
+
+/* MEAL CARD */
+.card { border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:8px; background:var(--surface); }
+.card-hdr { display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--bg); flex-wrap:wrap; }
+.c-time { font-size:11px; color:var(--hint); }
+.c-name { font-size:14px; font-weight:600; flex:1; }
+.c-cal { font-size:12px; color:var(--muted); }
+.badge { font-size:11px; font-weight:600; padding:2px 8px; border-radius:99px; white-space:nowrap; }
+.b-green { background:var(--green-bg); color:var(--green-t); }
+.b-purple { background:var(--purple-bg); color:var(--purple-t); }
+.b-blue { background:var(--blue-bg); color:var(--blue-t); }
+.b-amber { background:var(--amber-bg); color:var(--amber-t); }
+.b-pink { background:var(--pink-bg); color:var(--pink-t); }
+.b-red { background:var(--red-bg); color:var(--red-t); }
+.b-coral2 { background:var(--coral-bg); color:var(--coral-t); }
+.card-body { padding:10px 12px; }
+
+/* TOGGLE */
+.toggle { display:flex; gap:6px; margin-bottom:10px; }
+.tog-btn { flex:1; padding:7px; font-size:12px; font-weight:600; border:1.5px solid var(--border); border-radius:8px; background:var(--bg); color:var(--muted); cursor:pointer; text-align:center; }
+.tog-btn.active { border-color:var(--green-b); background:var(--green-bg); color:var(--green-t); }
+.tog-content { display:none; }
+.tog-content.active { display:block; }
+
+/* ROWS */
+.row { display:flex; justify-content:space-between; align-items:baseline; padding:3px 0; border-bottom:1px solid var(--border); }
+.row:last-of-type { border-bottom:none; }
+.rn { font-size:13px; flex:1; padding-right:8px; }
+.rv { font-size:11px; color:var(--hint); flex-shrink:0; }
+.or { text-align:center; font-size:11px; color:var(--hint); padding:3px 0; }
+.opt { font-size:10px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--hint); margin:8px 0 4px; }
+.opt:first-child { margin-top:0; }
+.tip { font-size:12px; color:var(--muted); margin-top:8px; padding-top:8px; border-top:1px solid var(--border); line-height:1.5; }
+
+/* SHAKE INLINE */
+.shake-inline { background:var(--green-bg); border:2px solid var(--green-b); border-radius:10px; padding:10px 13px; margin-bottom:8px; }
+.shake-inline b { font-size:13px; color:#085041; display:block; }
+.shake-inline span { font-size:12px; color:var(--green-t); display:block; margin-top:2px; }
+.shake-inline em { font-size:11px; color:var(--green-t); display:block; margin-top:3px; font-style:normal; }
+
+/* MACROS */
+.macros { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:14px; }
+.macro { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:9px 6px; text-align:center; }
+.macro-val { font-size:17px; font-weight:700; }
+.macro-lbl { font-size:10px; color:var(--muted); margin-top:2px; }
+.mini-macros { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-top:8px; }
+.mm { background:var(--bg); border-radius:7px; padding:6px 4px; text-align:center; }
+.mm-val { font-size:13px; font-weight:700; }
+.mm-lbl { font-size:10px; color:var(--muted); }
+
+/* GOAL CARDS */
+.goal-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px; }
+.goal-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:11px 12px; }
+.goal-title { font-size:13px; font-weight:600; margin-bottom:3px; }
+.goal-body { font-size:12px; color:var(--muted); line-height:1.5; }
+.split-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:8px; }
+.split-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:9px 10px; }
+.split-day { font-size:12px; font-weight:700; }
+.split-what { font-size:11px; color:var(--muted); margin-top:2px; line-height:1.3; }
+.nn-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; }
+
+/* GROCERY */
+.g-section { margin-bottom:14px; }
+.g-title { font-size:13px; font-weight:700; padding:10px 12px; background:var(--bg); border:1px solid var(--border); border-radius:10px 10px 0 0; border-bottom:none; }
+.g-items { border:1px solid var(--border); border-radius:0 0 10px 10px; background:var(--surface); overflow:hidden; }
+.g-item { display:flex; align-items:center; gap:10px; padding:8px 12px; border-bottom:1px solid var(--border); cursor:pointer; }
+.g-item:last-child { border-bottom:none; }
+.g-item.checked { opacity:0.4; }
+.g-item.checked .g-name { text-decoration:line-through; }
+.g-check { width:18px; height:18px; border-radius:4px; border:1.5px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+.g-check.done { background:var(--green-b); border-color:var(--green-b); }
+.g-check.done::after { content:''; display:block; width:5px; height:9px; border:2px solid #fff; border-top:none; border-left:none; transform:rotate(45deg) translateY(-1px); }
+.g-name { font-size:13px; flex:1; }
+.g-note { font-size:11px; color:var(--hint); flex-shrink:0; }
+.g-ctrls { display:flex; gap:8px; margin-bottom:14px; }
+.g-ctrl { flex:1; padding:8px; font-size:12px; font-weight:600; border:1px solid var(--border); border-radius:8px; background:var(--surface); color:var(--muted); cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="hdr">
+  <h1>Justin's Master Plan</h1>
+  <p>Schedule · Nutrition · Grocery list — all in one place</p>
+</div>
+
+<div class="shake-banner">
+  <b>Daily shake — always post-workout</b>
+  <span>1.5 scoops protein · milk · 1 cup oats · 1 tbsp peanut butter · collagen</span>
+  <span>1,050 cal · 115g protein · 88g carbs · 25g fat</span>
+  <em>Rest days (Sunday): drink mid-afternoon instead</em>
+</div>
+
+<!-- TOP NAV -->
+<div class="top-nav">
+  <button class="top-btn active" onclick="showTop('schedule',this)">Schedule</button>
+  <button class="top-btn" onclick="showTop('nutrition',this)">Nutrition</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SCHEDULE SECTION -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="schedule" class="top-panel active">
+  <div class="sub-nav">
+    <button class="sub-btn active" onclick="showSub('s-goals',this,'schedule')">Goals</button>
+    <button class="sub-btn" onclick="showSub('s-days',this,'schedule')">Daily schedule</button>
+    <button class="sub-btn" onclick="showSub('s-rules',this,'schedule')">Non-negotiables</button>
+    <button class="sub-btn" onclick="showSub('s-sie',this,'schedule')">SIE roadmap</button>
+  </div>
+
+  <!-- GOALS -->
+  <div id="s-goals" class="sub-page active">
+    <div class="note n-goal">Everything in your schedule connects back to these. When you don't feel like doing something, come back here.</div>
+    <div class="goal-grid">
+      <div class="goal-card"><div class="goal-title">SIE exam</div><div class="goal-body">Priority #1 right now. 45 min/day, every day. Target: done by late April. ~8 weeks out.</div></div>
+      <div class="goal-card"><div class="goal-title">FA track</div><div class="goal-body">SIE unlocks Vanderbilt Financial Group. Builds your book of business beyond TCBY.</div></div>
+      <div class="goal-card"><div class="goal-title">Real estate license</div><div class="goal-body">After SIE is done, this is next. RE + FA = serious earning potential.</div></div>
+      <div class="goal-card"><div class="goal-title">Ironman — Sep 26</div><div class="goal-body">~26 weeks out. Fri = long session. Tue/Thu = cardio. Mon/Wed/Sat = lifting.</div></div>
+      <div class="goal-card"><div class="goal-title">Income now</div><div class="goal-body">$700–900/wk at TCBY. Don't quit until FA commission is consistent.</div></div>
+      <div class="goal-card"><div class="goal-title">Order of ops</div><div class="goal-body">① SIE → ② FA role → ③ RE license → ④ Stack income. One at a time.</div></div>
+    </div>
+    <div class="lbl">Weekly training split</div>
+    <div class="split-grid">
+      <div class="split-card"><div class="split-day">Monday</div><div class="split-what">Upper push + core</div></div>
+      <div class="split-card"><div class="split-day">Tuesday</div><div class="split-what">Ironman cardio</div></div>
+      <div class="split-card"><div class="split-day">Wednesday</div><div class="split-what">Lower body + core</div></div>
+      <div class="split-card"><div class="split-day">Thursday</div><div class="split-what">Ironman cardio</div></div>
+      <div class="split-card"><div class="split-day">Friday</div><div class="split-what">Upper pull + core → long session</div></div>
+      <div class="split-card"><div class="split-day">Saturday</div><div class="split-what">Full body</div></div>
+    </div>
+  </div>
+
+  <!-- DAILY SCHEDULE -->
+  <div id="s-days" class="sub-page">
+    <div class="day-nav">
+      <button class="day-btn active" onclick="showDay('d-mon',this)">Monday</button>
+      <button class="day-btn" onclick="showDay('d-tue',this)">Tuesday</button>
+      <button class="day-btn" onclick="showDay('d-wed',this)">Wednesday</button>
+      <button class="day-btn" onclick="showDay('d-thu',this)">Thursday</button>
+      <button class="day-btn" onclick="showDay('d-fri',this)">Friday</button>
+      <button class="day-btn" onclick="showDay('d-sat',this)">Saturday</button>
+      <button class="day-btn" onclick="showDay('d-sun',this)">Sunday</button>
+    </div>
+
+    <!-- MON -->
+    <div id="d-mon" class="day-page active">
+      <div class="note n-blue">No 8am class. Sleep until 9. Upper push + core today.</div>
+      <div class="lbl">morning</div>
+      <div class="block"><div class="bar" style="background:#B4B2A9"></div><div class="block-body"><div class="b-time">9:00 – 9:20</div><div class="b-label">Wake up + fuel</div><div class="b-notes">Water, food, no phone for first 10 min</div></div></div>
+      <div class="block"><div class="bar" style="background:#B5D4F4"></div><div class="block-body"><div class="b-time">9:25 – 10:40</div><div class="b-label">DSC-273 · HHE*211</div><span class="b-tag" style="background:var(--blue-bg);color:var(--blue-t)">class</span></div></div>
+      <div class="lbl">midday — upper push + core</div>
+      <div class="block"><div class="bar" style="background:#F0997B"></div><div class="block-body"><div class="b-time">11:00 – 12:30</div><div class="b-label">Upper push + core</div><div class="b-muscle">Chest · Shoulders · Triceps · Core</div><div class="b-ex">Bench press · Overhead press · Incline DB press · Lateral raises · Tricep pushdowns · Dips · Plank variations · Cable crunches</div><span class="b-tag" style="background:var(--push-bg);color:var(--push-t)">upper push</span></div></div>
+      <div class="block"><div class="bar" style="background:#97C459"></div><div class="block-body"><div class="b-time">12:30 – 1:00</div><div class="b-label">Lunch — post-workout shake + food</div><div class="b-notes">See Nutrition tab for full meal options</div><span class="b-tag" style="background:var(--food-bg);color:var(--food-t)">food + shake</span></div></div>
+      <div class="block"><div class="bar" style="background:#FAC775"></div><div class="block-body"><div class="b-time">1:00 – 1:45</div><div class="b-label">SIE study</div><div class="b-notes">45 min max · review → new material → practice Qs</div><span class="b-tag" style="background:var(--sie-bg);color:var(--sie-t)">45 min max</span></div></div>
+      <div class="lbl">afternoon</div>
+      <div class="block"><div class="bar" style="background:#AFA9EC"></div><div class="block-body"><div class="b-time">2:00 – 4:30</div><div class="b-label">FA prep + career block</div><div class="b-notes">Learn advisory business, study Vanderbilt FG, outreach</div><span class="b-tag" style="background:var(--career-bg);color:var(--career-t)">career</span></div></div>
+      <div class="lbl">evening → peak hours</div>
+      <div class="block"><div class="bar" style="background:#B4B2A9"></div><div class="block-body"><div class="b-time">5:00 – 9:00</div><div class="b-label">Free / TCBY shift</div><div class="b-notes">If working: eat by 4:30, go</div><span class="b-tag" style="background:var(--free-bg);color:var(--free-t)">free / work</span></div></div>
+      <div class="block"><div class="bar" style="background:#7F77DD"></div><div class="block-body"><div class="b-time">9:00 – 11:00</div><div class="b-label">Peak focus block</div><div class="b-notes">SIE review, FA study, or RE research. Your sharpest hours.</div><span class="b-tag" style="background:var(--peak-bg);color:var(--peak-t)">night owl zone</span></div></div>
+      <div class="block"><div class="bar" style="background:#ED93B1"></div><div class="block-body"><div class="b-time">11:00 – 12:30</div><div class="b-label">Wind down</div><div class="b-notes">Magnesium. Sleep by 12:30 — 8am class tomorrow.</div></div></div>
+    </div>
+
+    <!-- TUE -->
+    <div id="d-tue" class="day-page">
+      <div class="note n-amber">8am start. Ironman cardio afternoon. Sleep by 12:30am Monday night.</div>
+      <div class="lbl">early morning</div>
+      <div class="block"><div class="bar" style="background:#B4B2A9"></div><div class="block-body"><div class="b-time">7:15 – 7:50</div><div class="b-label">Wake up — survival mode</div><div class="b-notes">Small breakfast, get out the door. Save your brain for later.</div></div></div>
+      <div class="block"><div class="bar" style="background:#B5D4F4"></div><div class="block-body"><div class="b-time">8:00 – 9:15</div><div class="b-label">BUS-252 · NEX*157</div><span class="b-tag" style="background:var(--blue-bg);color:var(--blue-t)">class</span></div></div>
+      <div class="block"><div class="bar" style="background:#B5D4F4"></div><div class="block-body"><div class="b-time">9:25 – 10:40</div><div class="b-label">FIN-440 · NEX*126</div><span class="b-tag" style="background:var(--blue-bg);color:var(--blue-t)">class</span></div></div>
+      <div class="lbl">midday</div>
+      <div class="block"><div class="bar" style="background:#FAC775"></div><div class="block-body"><div class="b-time">10:45 – 11:30</div><div class="b-label">SIE study</div><div class="b-notes">45 min · do it now while still in study mode</div><span class="b-tag" style="background:var(--sie-bg);color:var(--sie-t)">45 min max</span></div></div>
+      <div class="block"><div class="bar" style="background:#97C459"></div><div class="block-body"><div class="b-time">11:30 – 12:00</div><div class="b-label">Lunch</div><div class="b-notes">High protein + carbs — white rice only before cardio</div><span class="b-tag" style="background:var(--food-bg);color:var(--food-t)">food</span></div></div>
+      <div class="block"><div class="bar" style="background:#B5D4F4"></div><div class="block-body"><div class="b-time">12:15 – 1:30</div><div class="b-label">FIN-340 · SWB*306</div><span class="b-tag" style="background:var(--blue-bg);color:var(--blue-t)">class</span></div></div>
+      <div class="lbl">afternoon — cardio</div>
+      <div class="block"><div class="bar" style="background:#FAC775"></div><div class="block-body"><div class="b-time">1:45 – 3:00</div><div class="b-label">Ironman cardio</div><div class="b-muscle">Run · Bike · Swim</div><div class="b-ex">Zone 2 run (45–60 min) · Cycling intervals · Swim laps · Build distance weekly</div><span class="b-tag" style="background:var(--cardio-bg);color:var(--cardio-t)">Ironman cardio</span></div></div>
+      <div class="block"><div class="bar" style="background:#97C459"></div><div class="block-body"><div class="b-time">3:00 – 3:30</div><div class="b-label">Post-cardio shake</div><div class="b-notes">Drink immediately after finishing</div><span class="b-tag" style="background:var(--green-bg);color:var(--green-t)">shake</span></div></div>
+      <div class="block"><div class="bar" style="background:#AFA9EC"></div><div class="block-body"><div class="b-time">3:30 – 5:00</div><div class="b-label">FA prep block</div><div class="b-notes">Advisory study, outreach, skill building</div><span class="b-tag" style="background:var(--career-bg);color:var(--career-t)">career</span></div></div>
+      <div class="lbl">evening → peak hours</div>
+      <div class="block"><div class="bar" style="background:#B4B2A9"></div><div class="block-body"><div class="b-time">5:00 – 9:00</div><div class="b-label">Free / TCBY shift</div><div class="b-notes">If working: eat by 4:30, go. Career block moves to 3:30–4:30.</div><span class="b-tag" style="background:var(--free-bg);color:var(--free-t)">free / work</span></div></div>
+      <div class="block"><div class="bar" style="background:#7F77DD"></div><div class="block-body"><div class="b-time">9:00 – 11:00</div><div class="b-label">Peak focus block</div><div class="b-notes">SIE review or FA study</div><span class="b-tag" style="background:var(--peak-bg);color:var(--peak-t)">night owl zone</span></div></div>
+      <div class="block"><div class="bar" style="background:#ED93B1"></div><div class="block-body"><div class="b-time">11:00</div><div class="b-label">Wind down + sleep by 12:30</div><div class="b-notes">ACC-202 night class tomorrow. Protect the sleep.</div></div></div>
+    </div>
+
+    <!-- WED -->
+    <div id="d-wed" class="day-page">
+      <div class="note n-amber">Hardest day. DSC-273 morning + ACC-202 6–8:30pm. Lower body + core. Train, SIE, career, then class.</div>
+      <div class="lbl">morning</div>
+      <div class="block"><div class="bar" style="background:#B4B2A9"></div><div class="block-body"><div class="b-time">9:00 – 9:20</div><div class="b-label">Wake up</div><div class="b-notes">No 8am today — sleep until 9</div></div></div>
+      <div class="block"><div class="bar" style="background:#B5D4F4"></div><div class="block-body"><div class="b-time">9:25 – 10:40</div><div class="b-label">DSC-273 · HHE*211</div><span class="b-tag" style="background:var(--blue-bg);color:var(--blue-t)">class</span></div></div>
+      <div class="lbl">midday — lower body + core</div>
+      <div class="block"><div class="bar" style="background:#5DCAA5"></div><div class="block-body"><div class="b-time">11:00 – 12:15</div><div class="b-label">Lower body + core</div><div class="b-muscle">Quads · Hamstrings · Glutes · Core</div><div class="b-ex">Squats · Romanian deadlifts · Leg press · Lunges · Leg curls · Calf raises · Ab wheel/planks · Hanging leg raises</div><span class="b-tag" style="background:var(--lower-bg);color:var(--lower-t)">lower body</span></div></div>
+      <div class="block"><div class="bar" style="background:#97C459"></div><div class="block-body"><div class="b-time">12:15 – 12:45</div><div class="b-label">Shake + lunch</div><div class="b-notes">Post-workout shake then food</div><span class="b-tag" style="background:var(--food-bg);color:var(--food-t)">food + shake</span></div></div>
+      <div class="block"><div class="bar" style="background:#FAC775"></div><div class="block-body"><div class="b-time">12:45 – 1:30</div><div class="b-label">SIE study</div><div class="b-notes">45 min max — get it done before afternoon fills up</div><span class="b-tag" style="background:var(--sie-bg);color:var(--sie-t)">45 min max</span></div></div>
+      <div class="lbl">afternoon</div>
+      <div class="block"><div class="bar" style="background:#AFA9EC"></div><div class="block-body"><div class="b-time">1:30 – 4:30</div><div class="b-label">FA prep + career block</div><div class="b-notes">Your only real career window today — make it count</div><span class="b-tag" style="background:var(--career-bg);color:var(--career-t)">career</span></div></div>
+      <div class="block"><div class="bar" style="background:#97C459"></div><div class="block-body"><div class="b-time">4:30 – 5:30</div><div class="b-label">Dinner before class</div><div class="b-notes">Eat well — long night ahead</div><span class="b-tag" style="background:var(--food-bg);color:var(--food-t)">food</span></div></div>
+      <div class="lbl">evening</div>
+      <div class="block"><div class="bar" style="background:#B5D4F4"></div><div class="block-body"><div class="b-time">6:00 – 8:30</div><div class="b-label">ACC-202 · HHE*211</div><span class="b-tag" style="background:var(--blue-bg);color:var(--blue-t)">night class</span></div></div>
+      <div class="block"><div class="bar" style="background:#ED93B1"></div><div class="block-body"><div class="b-time">8:45+</div><div class="b-label">Wind down only</div><div class="b-notes">No deep work. Magnesium, sleep. 8am Thursday tomorrow.</div></div></div>
+    </div>
+
+    <!-- THU -->
+    <div id="d-thu" class="day-page">
+      <div class="note n-blue">Same morning as Tuesday. Cardio afternoon. Big peak block tonight — more runway before Friday.</div>
+      <div class="lbl">early morning</div>
+      <div class="block"><div class="bar" style="background:#B4B2A9"></div><div class="block-body"><div class="b-time">7:15 – 7:50</div><div class="b-label">Wake up — survival mode</div><div class="b-notes">Small breakfast, get to class. Save the brain for later.</div></div></div>
+      <div class="block"><div class="bar" style="background:#B5D4F4"></div><div class="block-body"><div class="b-time">8:00 – 9:15</div><div class="b-label">BUS-252 · NEX*157</div><span class="b-tag" style="background:var(--blue-bg);color:var(--blue-t)">class</span></div></div>
+      <div class="block"><div class="bar" style="background:#B5D4F4"></div><div class="block-body"><div class="b-time">9:25 – 10:40</div><div class="b-label">FIN-440 · NEX*126</div><span class="b-tag" style="background:var(--blue-bg);color:var(--blue-t)">class</span></div></div>
+      <div class="lbl">midday</div>
+      <div class="block"><div class="bar" style="background:#FAC775"></div><div class="block-body"><div class="b-time">10:45 – 11:30</div><div class="b-label">SIE study</div><div class="b-notes">45 min · ride the class momentum</div><span class="b-tag" style="background:var(--sie-bg);color:var(--sie-t)">45 min max</span></div></div>
+      <div class="block"><div class="bar" style="background:#97C459"></div><div class="block-body"><div class="b-time">11:30 – 12:00</div><div class="b-label">Lunch</div><div class="b-notes">White rice only before cardio</div><span class="b-tag" style="background:var(--food-bg);color:var(--food-t)">food</span></div></div>
+      <div class="block"><div class="bar" style="background:#B5D4F4"></div><div class="block-body"><div class="b-time">12:15 – 1:30</div><div class="b-label">FIN-340 · SWB*306</div><span class="b-tag" style="background:var(--blue-bg);color:var(--blue-t)">class</span></div></div>
+      <div class="lbl">afternoon — cardio</div>
+      <div class="block"><div class="bar" style="background:#FAC775"></div><div class="block-body"><div class="b-time">1:45 – 3:00</div><div class="b-label">Ironman cardio</div><div class="b-muscle">Run · Bike · Swim</div><div class="b-ex">Zone 2 run (45–60 min) · Cycling intervals · Swim laps · Build distance weekly</div><span class="b-tag" style="background:var(--cardio-bg);color:var(--cardio-t)">Ironman cardio</span></div></div>
+      <div class="block"><div class="bar" style="background:#97C459"></div><div class="block-body"><div class="b-time">3:00 – 3:30</div><div class="b-label">Post-cardio shake</div><div class="b-notes">Drink immediately</div><span class="b-tag" style="background:var(--green-bg);color:var(--green-t)">shake</span></div></div>
+      <div class="block"><div class="bar" style="background:#AFA9EC"></div><div class="block-body"><div class="b-time">3:30 – 5:00</div><div class="b-label">FA prep block</div><span class="b-tag" style="background:var(--career-bg);color:var(--career-t)">career</span></div></div>
+      <div class="lbl">evening → peak hours</div>
+      <div class="block"><div class="bar" style="background:#B4B2A9"></div><div class="block-body"><div class="b-time">5:00 – 9:00</div><div class="b-label">Free / TCBY shift</div><div class="b-notes">If working: eat by 4:30, go</div><span class="b-tag" style="background:var(--free-bg);color:var(--free-t)">free / work</span></div></div>
+      <div class="block"><div class="bar" style="background:#7F77DD"></div><div class="block-body"><div class="b-time">9:00 – 11:30</div><div class="b-label">Peak focus block</div><div class="b-notes">No 8am until Friday — more runway. Best deep work night of the week.</div><span class="b-tag" style="background:var(--peak-bg);color:var(--peak-t)">night owl zone</span></div></div>
+      <div class="block"><div class="bar" style="background:#ED93B1"></div><div class="block-body"><div class="b-time">11:30 – 1:00</div><div class="b-label">Wind down</div><div class="b-notes">Magnesium. Sleep by 1am.</div></div></div>
+    </div>
+
+    <!-- FRI -->
+    <div id="d-fri" class="day-page">
+      <div class="note n-blue">One class then free all day. Upper pull + long Ironman session. Biggest training day of the week.</div>
+      <div class="lbl">morning</div>
+      <div class="block"><div class="bar" style="background:#B4B2A9"></div><div class="block-body"><div class="b-time">7:15 – 7:50</div><div class="b-label">Wake up</div><div class="b-notes">Last early morning of the week</div></div></div>
+      <div class="block"><div class="bar" style="background:#B5D4F4"></div><div class="block-body"><div class="b-time">8:00 – 8:50</div><div class="b-label">BFD-102 · BLH*201</div><span class="b-tag" style="background:var(--blue-bg);color:var(--blue-t)">class</span></div></div>
+      <div class="lbl">morning — upper pull + core</div>
+      <div class="block"><div class="bar" style="background:#AFA9EC"></div><div class="block-body"><div class="b-time">9:00 – 10:15</div><div class="b-label">Upper pull + core</div><div class="b-muscle">Back · Biceps · Rear Delts · Core</div><div class="b-ex">Pull-ups/lat pulldown · Barbell rows · Seated cable rows · Face pulls · Dumbbell curls · Hammer curls · Reverse crunches · Dead bugs</div><span class="b-tag" style="background:var(--pull-bg);color:var(--pull-t)">upper pull</span></div></div>
+      <div class="lbl">midday — long Ironman session</div>
+      <div class="block"><div class="bar" style="background:#FAC775"></div><div class="block-body"><div class="b-time">10:30 – 12:30</div><div class="b-label">Long endurance session</div><div class="b-muscle">Long Run · Long Bike · Brick</div><div class="b-ex">Long run (build weekly) · Long bike (build weekly) · Brick (bike → run) · Ironman anchor</div><span class="b-tag" style="background:var(--cardio-bg);color:var(--cardio-t)">Ironman long session</span></div></div>
+      <div class="block"><div class="bar" style="background:#97C459"></div><div class="block-body"><div class="b-time">12:30 – 1:15</div><div class="b-label">Post-training shake + recovery meal</div><div class="b-notes">Drink shake immediately. Then eat big — this is your most important recovery meal of the week.</div><span class="b-tag" style="background:var(--food-bg);color:var(--food-t)">shake + food</span></div></div>
+      <div class="block"><div class="bar" style="background:#FAC775"></div><div class="block-body"><div class="b-time">1:15 – 2:00</div><div class="b-label">SIE study</div><div class="b-notes">45 min — lighter session after big training day</div><span class="b-tag" style="background:var(--sie-bg);color:var(--sie-t)">45 min max</span></div></div>
+      <div class="block"><div class="bar" style="background:#AFA9EC"></div><div class="block-body"><div class="b-time">2:00 – 3:30</div><div class="b-label">FA prep + career block</div><span class="b-tag" style="background:var(--career-bg);color:var(--career-t)">career</span></div></div>
+      <div class="lbl">evening</div>
+      <div class="block"><div class="bar" style="background:#B4B2A9"></div><div class="block-body"><div class="b-time">3:30+</div><div class="b-label">Weekend starts</div><div class="b-notes">Gf, friends, food. You've earned it.</div><span class="b-tag" style="background:var(--free-bg);color:var(--free-t)">free</span></div></div>
+    </div>
+
+    <!-- SAT -->
+    <div id="d-sat" class="day-page">
+      <div class="note n-goal">Full body + SIE done by noon. Rest of the day is completely yours — no guilt.</div>
+      <div class="lbl">morning</div>
+      <div class="block"><div class="bar" style="background:#B4B2A9"></div><div class="block-body"><div class="b-time">9:00 – 10:00</div><div class="b-label">Wake up + fuel</div><div class="b-notes">Sleep in, eat before gym</div></div></div>
+      <div class="lbl">full body</div>
+      <div class="block"><div class="bar" style="background:#ED93B1"></div><div class="block-body"><div class="b-time">10:00 – 11:30</div><div class="b-label">Full body</div><div class="b-muscle">Compound lifts · Athletic focus</div><div class="b-ex">Deadlifts · Bench press · Pull-ups · Squats or trap bar DL · DB shoulder press · Barbell rows · Farmer carries · Core finisher</div><span class="b-tag" style="background:var(--full-bg);color:var(--full-t)">full body</span></div></div>
+      <div class="lbl">midday</div>
+      <div class="block"><div class="bar" style="background:#97C459"></div><div class="block-body"><div class="b-time">11:30 – 12:00</div><div class="b-label">Post-gym shake</div><div class="b-notes">Drink immediately after finishing</div><span class="b-tag" style="background:var(--green-bg);color:var(--green-t)">shake</span></div></div>
+      <div class="block"><div class="bar" style="background:#FAC775"></div><div class="block-body"><div class="b-time">11:30 – 12:15</div><div class="b-label">SIE study</div><div class="b-notes">45 min right after gym — discipline momentum carries over</div><span class="b-tag" style="background:var(--sie-bg);color:var(--sie-t)">45 min max</span></div></div>
+      <div class="block"><div class="bar" style="background:#97C459"></div><div class="block-body"><div class="b-time">12:15 – 1:00</div><div class="b-label">Lunch</div><span class="b-tag" style="background:var(--food-bg);color:var(--food-t)">food</span></div></div>
+      <div class="lbl">afternoon + evening</div>
+      <div class="block"><div class="bar" style="background:#B4B2A9"></div><div class="block-body"><div class="b-time">1:00+</div><div class="b-label">Free — gf, friends, TCBY if working</div><div class="b-notes">Done for the day. Enjoy it completely guilt-free.</div><span class="b-tag" style="background:var(--free-bg);color:var(--free-t)">free</span></div></div>
+      <div class="block"><div class="bar" style="background:#7F77DD"></div><div class="block-body"><div class="b-time">9:30 – 11:00</div><div class="b-label">Optional peak block</div><div class="b-notes">SIE review or FA reading only if you feel like it. Never forced on Saturdays.</div><span class="b-tag" style="background:var(--peak-bg);color:var(--peak-t)">optional</span></div></div>
+    </div>
+
+    <!-- SUN -->
+    <div id="d-sun" class="day-page">
+      <div class="note n-goal">Reset day. Active recovery, SIE practice Qs, plan the week. Batch cook for the week.</div>
+      <div class="lbl">morning</div>
+      <div class="block"><div class="bar" style="background:#B4B2A9"></div><div class="block-body"><div class="b-time">9:30 – 10:30</div><div class="b-label">Wake up + slow morning</div><div class="b-notes">Eat, coffee, decompress. No rush.</div></div></div>
+      <div class="block"><div class="bar" style="background:#B4B2A9"></div><div class="block-body"><div class="b-time">10:30 – 11:30</div><div class="b-label">Active recovery</div><div class="b-muscle">Easy zone 2 · Mobility · Stretch</div><div class="b-ex">Easy 20–30 min jog or walk · Hip flexor stretches · Foam rolling · Shoulder mobility</div><span class="b-tag" style="background:var(--free-bg);color:var(--free-t)">recovery only</span></div></div>
+      <div class="lbl">midday</div>
+      <div class="block"><div class="bar" style="background:#FAC775"></div><div class="block-body"><div class="b-time">12:00 – 12:45</div><div class="b-label">SIE — practice questions only</div><div class="b-notes">Sundays are always practice Qs. Find weak spots, note them for the week.</div><span class="b-tag" style="background:var(--sie-bg);color:var(--sie-t)">practice only</span></div></div>
+      <div class="block"><div class="bar" style="background:#97C459"></div><div class="block-body"><div class="b-time">12:45 – 2:00</div><div class="b-label">Lunch + batch cook</div><div class="b-notes">Cook extra rice + chicken now. Saves huge time Mon–Wed.</div><span class="b-tag" style="background:var(--food-bg);color:var(--food-t)">food + batch cook</span></div></div>
+      <div class="block"><div class="bar" style="background:#AFA9EC"></div><div class="block-body"><div class="b-time">1:30 – 2:30</div><div class="b-label">Week reset</div><div class="b-notes">Set 3 goals · check TCBY schedule · note SIE weak areas · 1 hr max</div><span class="b-tag" style="background:var(--career-bg);color:var(--career-t)">planning</span></div></div>
+      <div class="lbl">afternoon + evening</div>
+      <div class="block"><div class="bar" style="background:#B4B2A9"></div><div class="block-body"><div class="b-time">2:30+</div><div class="b-label">Free</div><div class="b-notes">Gf, family, food, whatever recharges you</div><span class="b-tag" style="background:var(--free-bg);color:var(--free-t)">free</span></div></div>
+      <div class="block"><div class="bar" style="background:#97C459"></div><div class="block-body"><div class="b-time">3:00</div><div class="b-label">Post-workout shake (recovery day)</div><div class="b-notes">Mid-afternoon on rest days</div><span class="b-tag" style="background:var(--green-bg);color:var(--green-t)">shake</span></div></div>
+      <div class="block"><div class="bar" style="background:#7F77DD"></div><div class="block-body"><div class="b-time">9:00 – 10:30</div><div class="b-label">Peak block — week prep</div><div class="b-notes">Light FA reading or SIE weak spot review. Gets you locked in for Monday.</div><span class="b-tag" style="background:var(--peak-bg);color:var(--peak-t)">night owl zone</span></div></div>
+      <div class="block"><div class="bar" style="background:#ED93B1"></div><div class="block-body"><div class="b-time">11:00 – 12:30</div><div class="b-label">Wind down</div><div class="b-notes">Magnesium. Sleep by 12:30 — 9:25am class Monday.</div></div></div>
+    </div>
+  </div>
+
+  <!-- NON-NEGOTIABLES -->
+  <div id="s-rules" class="sub-page">
+    <div class="note n-goal">If you actually do these every day, you'll be on a completely different level than everyone else your age.</div>
+    <div class="lbl">Daily minimums</div>
+    <div class="nn-grid">
+      <div class="goal-card"><div class="goal-title">SIE daily</div><div class="goal-body">45 min max. Never skip. One block every day.</div></div>
+      <div class="goal-card"><div class="goal-title">Train 6x/week</div><div class="goal-body">Sunday = active recovery only.</div></div>
+      <div class="goal-card"><div class="goal-title">Career daily</div><div class="goal-body">Min 45 min. FA prep or outreach.</div></div>
+    </div>
+    <div class="lbl" style="margin-top:14px">Sleep rules</div>
+    <div class="card"><div class="card-body">
+      <div class="row"><span class="rn">Before Tue / Wed / Thu (8am class days)</span><span class="rv">sleep by 12:30am</span></div>
+      <div class="row"><span class="rn">All other nights</span><span class="rv">sleep by 1am</span></div>
+      <div class="row"><span class="rn">You don't need to become a morning person</span><span class="rv">just protect the sleep</span></div>
+    </div></div>
+    <div class="lbl">What wins your week</div>
+    <div class="card"><div class="card-body">
+      <div class="row"><span class="rn">You can't win at night — nights are inconsistent</span><span class="rv"></span></div>
+      <div class="row"><span class="rn">Win in your peak hours: 9–11pm (Mon/Thu/Fri)</span><span class="rv">deep work</span></div>
+      <div class="row"><span class="rn">Win in midday gaps: 1–5pm on free days</span><span class="rv">career + SIE</span></div>
+      <div class="row"><span class="rn">Batch cook Sunday — saves 20 min every weekday</span><span class="rv">non-negotiable</span></div>
+    </div></div>
+    <div class="lbl">Supplements</div>
+    <div class="card"><div class="card-body">
+      <div class="row"><span class="rn">Morning: Fish oil · D3+K2 · Zinc · Ashwagandha</span><span class="rv">daily</span></div>
+      <div class="row"><span class="rn">Night: Magnesium glycinate</span><span class="rv">before sleep</span></div>
+      <div class="row"><span class="rn">Training: Electrolytes (morning water)</span><span class="rv">daily</span></div>
+    </div></div>
+  </div>
+
+  <!-- SIE ROADMAP -->
+  <div id="s-sie" class="sub-page">
+    <div class="note n-amber">45 min max per session. Never more. Consistency beats intensity every time with SIE.</div>
+    <div class="lbl">Topic roadmap</div>
+    <div class="card"><div class="card-body">
+      <div class="row"><span class="rn">Weeks 1–2</span><span class="rv">Capital markets, products & risks</span></div>
+      <div class="row"><span class="rn">Weeks 3–4</span><span class="rv">Trading, customer accounts, economic factors</span></div>
+      <div class="row"><span class="rn">Weeks 5–6</span><span class="rv">Rules & regulations, prohibited practices</span></div>
+      <div class="row"><span class="rn">Weeks 7–8</span><span class="rv">Full practice exams, weak area review</span></div>
+    </div></div>
+    <div class="lbl">Every session structure (45 min)</div>
+    <div class="card"><div class="card-body">
+      <div class="row"><span class="rn">0–5 min</span><span class="rv">Review last topic</span></div>
+      <div class="row"><span class="rn">5–35 min</span><span class="rv">New material</span></div>
+      <div class="row"><span class="rn">35–45 min</span><span class="rv">Practice questions</span></div>
+      <div class="row"><span class="rn">Sundays only</span><span class="rv">Practice questions only — find weak spots</span></div>
+    </div></div>
+    <div class="lbl">Best study windows by day</div>
+    <div class="card"><div class="card-body">
+      <div class="row"><span class="rn">Monday</span><span class="rv">1:00 – 1:45pm (after lunch)</span></div>
+      <div class="row"><span class="rn">Tuesday</span><span class="rv">10:45 – 11:30am (between classes)</span></div>
+      <div class="row"><span class="rn">Wednesday</span><span class="rv">12:45 – 1:30pm (after gym)</span></div>
+      <div class="row"><span class="rn">Thursday</span><span class="rv">10:45 – 11:30am (between classes)</span></div>
+      <div class="row"><span class="rn">Friday</span><span class="rv">1:15 – 2:00pm (after long session)</span></div>
+      <div class="row"><span class="rn">Saturday</span><span class="rv">11:30am – 12:15pm (after gym)</span></div>
+      <div class="row"><span class="rn">Sunday</span><span class="rv">12:00 – 12:45pm (practice Qs only)</span></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- NUTRITION SECTION -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="nutrition" class="top-panel">
+  <div class="sub-nav">
+    <button class="sub-btn active" onclick="showSub('n-meals',this,'nutrition')">Daily meals</button>
+    <button class="sub-btn" onclick="showSub('n-shakes',this,'nutrition')">Shake recipes</button>
+    <button class="sub-btn" onclick="showSub('n-swaps',this,'nutrition')">Real food swaps</button>
+    <button class="sub-btn" onclick="showSub('n-grocery',this,'nutrition')">Grocery list</button>
+    <button class="sub-btn" onclick="showSub('n-targets',this,'nutrition')">Targets</button>
+  </div>
+
+  <!-- DAILY MEALS -->
+  <div id="n-meals" class="sub-page active">
+    <div class="day-nav">
+      <button class="day-btn active" onclick="showDay('n-mon',this)">Monday</button>
+      <button class="day-btn" onclick="showDay('n-tue',this)">Tuesday</button>
+      <button class="day-btn" onclick="showDay('n-wed',this)">Wednesday</button>
+      <button class="day-btn" onclick="showDay('n-thu',this)">Thursday</button>
+      <button class="day-btn" onclick="showDay('n-fri',this)">Friday</button>
+      <button class="day-btn" onclick="showDay('n-sat',this)">Saturday</button>
+      <button class="day-btn" onclick="showDay('n-sun',this)">Sunday</button>
+    </div>
+
+    <!-- N-MON -->
+    <div id="n-mon" class="day-page active">
+      <div class="note n-blue">Upper push + core. Sleep until 9. Shake post-gym 12:30pm.</div>
+      <div class="lbl">9:00am — breakfast</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">9:00am</span><span class="c-name">Morning shake</span><span class="c-cal">~750 cal</span><span class="badge b-green">liquid</span></div>
+        <div class="card-body">
+          <div class="toggle"><div class="tog-btn active" onclick="tog(this,'tm-b1')">Liquid</div><div class="tog-btn" onclick="tog(this,'tm-b2')">Real food instead</div></div>
+          <div id="tm-b1" class="tog-content active"><div class="row"><span class="rn">Any morning shake — see Shake Recipes tab</span><span class="rv">~750 cal</span></div><div class="row"><span class="rn">OJ (16oz) on the side</span><span class="rv">+220 cal</span></div></div>
+          <div id="tm-b2" class="tog-content"><div class="row"><span class="rn">Oatmeal (1.5 cups dry) + honey + banana + blueberries + Greek yogurt (1 cup)</span><span class="rv">650 cal · 31g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Protein pancakes (1.5 scoops + banana + oat flour) + maple syrup</span><span class="rv">650 cal · 45g P</span></div><div class="tip">Add a Premier Protein shake on the side to keep protein up.</div></div>
+        </div>
+      </div>
+      <div class="lbl">10:45am — pre-gym snack</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">10:45am</span><span class="c-name">Pre-workout snack</span><span class="c-cal">~300 cal</span><span class="badge b-green">pre-gym</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Bagel + banana</span><span class="rv">82g C · 10g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Rice cakes (4) + honey + apple</span><span class="rv">75g C · 3g P</span></div><div class="tip">Fast carbs only. No fat before gym.</div></div>
+      </div>
+      <div class="lbl">12:30pm — post-gym shake</div>
+      <div class="shake-inline"><b>Post-workout shake — within 20 min of finishing</b><span>1,050 cal · 115g protein · 88g carbs · 25g fat</span></div>
+      <div class="lbl">1:30pm — lunch</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">1:30pm</span><span class="c-name">Lunch</span><span class="c-cal">~650 cal</span><span class="badge b-purple">real meal 1</span></div>
+        <div class="card-body"><div class="row"><span class="rn">White rice (2 cups) + chicken (6oz) + broccoli + soy sauce</span><span class="rv">90g C · 50g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Turkey rice bowl (5oz) + rice (2 cups) + salsa + corn</span><span class="rv">92g C · 42g P</span></div><div class="tip">Batch cook rice + chicken Sunday and this takes 2 min to plate.</div></div>
+      </div>
+      <div class="lbl">3:30pm — career block drink</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">3:30pm</span><span class="c-name">Premier Protein + OJ</span><span class="c-cal">~380 cal</span><span class="badge b-blue">liquid · zero cooking</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Premier Protein shake</span><span class="rv">160 cal · 30g P</span></div><div class="row"><span class="rn">Orange juice (16oz)</span><span class="rv">220 cal · 52g C</span></div></div>
+      </div>
+      <div class="lbl">6:30pm — dinner</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">6:30pm</span><span class="c-name">Dinner</span><span class="c-cal">~750 cal</span><span class="badge b-purple">real meal 2</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Pasta (2 cups) + lean ground turkey (5oz) + marinara + side salad</span><span class="rv">100g C · 44g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Salmon (5oz) + white rice (2 cups) + green beans</span><span class="rv">90g C · 38g P</span></div></div>
+      </div>
+      <div class="lbl">9:00pm — night snack</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">9:00pm</span><span class="c-name">Night snack</span><span class="c-cal">~200 cal</span><span class="badge b-blue">peak block</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Low fat popcorn + fruit</span><span class="rv">~200 cal</span></div><div class="or">— or —</div><div class="row"><span class="rn">Rice cakes (3) + turkey slices + mustard</span><span class="rv">~200 cal · 22g P</span></div></div>
+      </div>
+      <div class="macros"><div class="macro"><div class="macro-val">3,830</div><div class="macro-lbl">calories</div></div><div class="macro"><div class="macro-val">~205g</div><div class="macro-lbl">protein</div></div><div class="macro"><div class="macro-val">~435g</div><div class="macro-lbl">carbs</div></div><div class="macro"><div class="macro-val">~55g</div><div class="macro-lbl">fat</div></div></div>
+    </div>
+
+    <!-- N-TUE -->
+    <div id="n-tue" class="day-page">
+      <div class="note n-amber">8am class + afternoon cardio. Prep morning shake the night before. Shake post-cardio 3:15pm.</div>
+      <div class="lbl">7:15am — breakfast</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">7:15am</span><span class="c-name">Morning shake (prep night before)</span><span class="c-cal">~750 cal</span><span class="badge b-green">grab and go</span></div>
+        <div class="card-body">
+          <div class="toggle"><div class="tog-btn active" onclick="tog(this,'tt-b1')">Liquid</div><div class="tog-btn" onclick="tog(this,'tt-b2')">Real food instead</div></div>
+          <div id="tt-b1" class="tog-content active"><div class="row"><span class="rn">Any morning shake — blend Monday night, grab at 7:15</span><span class="rv">~750 cal</span></div><div class="tip">Prep it the night before. No time to blend at 7am.</div></div>
+          <div id="tt-b2" class="tog-content"><div class="row"><span class="rn">Overnight oats (1.5 cups oats + oat milk + honey + banana) — prep night before</span><span class="rv">650 cal · 16g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">2 bagels + low fat cream cheese + banana</span><span class="rv">650 cal · 16g P</span></div></div>
+        </div>
+      </div>
+      <div class="lbl">10:45am — SIE snack</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">10:45am</span><span class="c-name">Premier Protein shake</span><span class="c-cal">160 cal</span><span class="badge b-blue">liquid · during SIE</span></div>
+        <div class="card-body"><div class="row"><span class="rn">1 bottle — drink while studying</span><span class="rv">160 cal · 30g P</span></div></div>
+      </div>
+      <div class="lbl">11:30am — pre-cardio lunch</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">11:30am</span><span class="c-name">Pre-cardio lunch</span><span class="c-cal">~700 cal</span><span class="badge b-purple">real meal 1</span></div>
+        <div class="card-body"><div class="row"><span class="rn">White rice (2 cups) + chicken (6oz) + broccoli + soy sauce</span><span class="rv">90g C · 50g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Large wrap + turkey (4oz) + white rice + salsa + corn</span><span class="rv">88g C · 38g P</span></div><div class="tip">White rice only — digests faster before 1:45pm cardio.</div></div>
+      </div>
+      <div class="lbl">3:15pm — post-cardio shake</div>
+      <div class="shake-inline"><b>Post-workout shake — drink immediately after cardio</b><span>1,050 cal · 115g protein · 88g carbs · 25g fat</span><em>Most important shake timing of the week</em></div>
+      <div class="lbl">5:30pm — dinner</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">5:30pm</span><span class="c-name">Dinner</span><span class="c-cal">~800 cal</span><span class="badge b-purple">real meal 2</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Chicken stir fry — chicken (6oz) + rice (2.5 cups) + veggies + soy</span><span class="rv">112g C · 52g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Shrimp (8oz) + pasta (2 cups) + marinara + side salad</span><span class="rv">100g C · 50g P</span></div></div>
+      </div>
+      <div class="lbl">9:00pm — night snack</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">9:00pm</span><span class="c-name">Night snack</span><span class="c-cal">~200 cal</span><span class="badge b-blue">peak block</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Greek yogurt + granola + honey</span><span class="rv">48g C · 17g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Rice cakes (3) + banana</span><span class="rv">55g C · 3g P</span></div></div>
+      </div>
+      <div class="macros"><div class="macro"><div class="macro-val">3,800</div><div class="macro-lbl">calories</div></div><div class="macro"><div class="macro-val">~200g</div><div class="macro-lbl">protein</div></div><div class="macro"><div class="macro-val">~445g</div><div class="macro-lbl">carbs</div></div><div class="macro"><div class="macro-val">~50g</div><div class="macro-lbl">fat</div></div></div>
+    </div>
+
+    <!-- N-WED -->
+    <div id="n-wed" class="day-page">
+      <div class="note n-amber">Hardest day. Lower body + ACC-202 night class. Shake post-gym 12:15pm. Dinner at 4:30 before class.</div>
+      <div class="lbl">9:00am — breakfast</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">9:00am</span><span class="c-name">Morning shake + OJ</span><span class="c-cal">~970 cal</span><span class="badge b-green">liquid</span></div>
+        <div class="card-body">
+          <div class="toggle"><div class="tog-btn active" onclick="tog(this,'tw-b1')">Liquid</div><div class="tog-btn" onclick="tog(this,'tw-b2')">Real food instead</div></div>
+          <div id="tw-b1" class="tog-content active"><div class="row"><span class="rn">Any morning shake + OJ (16oz) on the side</span><span class="rv">~970 cal</span></div></div>
+          <div id="tw-b2" class="tog-content"><div class="row"><span class="rn">Smoothie bowl — banana + mango + granola + honey + Greek yogurt</span><span class="rv">650 cal · 29g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Oatmeal (1.5 cups) + banana + honey + cinnamon</span><span class="rv">650 cal · 14g P</span></div></div>
+        </div>
+      </div>
+      <div class="lbl">10:45am — pre-legs snack</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">10:45am</span><span class="c-name">Pre-legs snack</span><span class="c-cal">~300 cal</span><span class="badge b-green">pre-legs</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Bagel + banana</span><span class="rv">82g C · 10g P</span></div><div class="tip">Leg day burns the most calories of any lift. Fuel up.</div></div>
+      </div>
+      <div class="lbl">12:15pm — post-gym shake</div>
+      <div class="shake-inline"><b>Post-workout shake — right after lower body session</b><span>1,050 cal · 115g protein · 88g carbs · 25g fat</span></div>
+      <div class="lbl">12:45pm — SIE lunch</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">12:45pm</span><span class="c-name">Lunch</span><span class="c-cal">~600 cal</span><span class="badge b-purple">real meal 1</span></div>
+        <div class="card-body"><div class="row"><span class="rn">White rice (2 cups) + tuna (2 cans) + cucumber + low fat mayo (1 tsp)</span><span class="rv">90g C · 52g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Turkey rice bowl + black beans + salsa + corn</span><span class="rv">95g C · 44g P</span></div></div>
+      </div>
+      <div class="lbl">4:30pm — dinner before class</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">4:30pm</span><span class="c-name">Pre-class dinner</span><span class="c-cal">~700 cal</span><span class="badge b-purple">real meal 2</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Pasta (2 cups) + shrimp (6oz) + marinara + side salad</span><span class="rv">98g C · 44g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Chicken (6oz) + white rice (2 cups) + roasted veggies + hot sauce</span><span class="rv">92g C · 50g P</span></div><div class="tip">ACC-202 runs until 8:30pm. Don't skip this.</div></div>
+      </div>
+      <div class="lbl">9:00pm — post-class snack</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">9:00pm</span><span class="c-name">Light snack</span><span class="c-cal">~160 cal</span><span class="badge b-blue">wind down</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Premier Protein shake OR Greek yogurt + honey</span><span class="rv">160–200 cal</span></div><div class="tip">Keep it light — 8am Thursday tomorrow.</div></div>
+      </div>
+      <div class="macros"><div class="macro"><div class="macro-val">3,820</div><div class="macro-lbl">calories</div></div><div class="macro"><div class="macro-val">~202g</div><div class="macro-lbl">protein</div></div><div class="macro"><div class="macro-val">~432g</div><div class="macro-lbl">carbs</div></div><div class="macro"><div class="macro-val">~52g</div><div class="macro-lbl">fat</div></div></div>
+    </div>
+
+    <!-- N-THU -->
+    <div id="n-thu" class="day-page">
+      <div class="note n-blue">Mirror of Tuesday. Cardio afternoon. Shake post-cardio 3:15pm. Eat big at dinner to load up for Friday.</div>
+      <div class="lbl">7:15am — breakfast</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">7:15am</span><span class="c-name">Morning shake (prep night before)</span><span class="c-cal">~750 cal</span><span class="badge b-green">grab and go</span></div>
+        <div class="card-body">
+          <div class="toggle"><div class="tog-btn active" onclick="tog(this,'tth-b1')">Liquid</div><div class="tog-btn" onclick="tog(this,'tth-b2')">Real food instead</div></div>
+          <div id="tth-b1" class="tog-content active"><div class="row"><span class="rn">Any morning shake — blend Wednesday night</span><span class="rv">~750 cal</span></div></div>
+          <div id="tth-b2" class="tog-content"><div class="row"><span class="rn">Overnight oats + banana + honey + berries</span><span class="rv">650 cal · 14g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Acai bowl + granola + banana + honey + string cheese x2</span><span class="rv">650 cal · 22g P</span></div></div>
+        </div>
+      </div>
+      <div class="lbl">10:45am — SIE snack</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">10:45am</span><span class="c-name">Premier Protein + fruit</span><span class="c-cal">~260 cal</span><span class="badge b-blue">liquid</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Premier Protein shake</span><span class="rv">160 cal · 30g P</span></div><div class="row"><span class="rn">Banana or apple</span><span class="rv">~100 cal</span></div></div>
+      </div>
+      <div class="lbl">11:30am — pre-cardio lunch</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">11:30am</span><span class="c-name">Pre-cardio lunch</span><span class="c-cal">~700 cal</span><span class="badge b-purple">real meal 1</span></div>
+        <div class="card-body"><div class="row"><span class="rn">White rice (2 cups) + ground turkey (5oz) + black beans + salsa</span><span class="rv">100g C · 46g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Chicken (6oz) + white rice (2 cups) + corn + hot sauce</span><span class="rv">95g C · 50g P</span></div></div>
+      </div>
+      <div class="lbl">3:15pm — post-cardio shake</div>
+      <div class="shake-inline"><b>Post-workout shake — within 20 min of finishing cardio</b><span>1,050 cal · 115g protein · 88g carbs · 25g fat</span></div>
+      <div class="lbl">6:00pm — big dinner (load for Friday)</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">6:00pm</span><span class="c-name">Big dinner</span><span class="c-cal">~850 cal</span><span class="badge b-purple">real meal 2</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Pasta (2.5 cups) + turkey meatballs (5oz) + marinara + salad</span><span class="rv">112g C · 46g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Lean beef stir fry (5oz sirloin) + rice (2.5 cups) + bok choy + soy</span><span class="rv">110g C · 46g P</span></div><div class="tip">Friday is your hardest training day. Go in fully loaded.</div></div>
+      </div>
+      <div class="lbl">9:00pm — night snack</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">9:00pm</span><span class="c-name">Night snack</span><span class="c-cal">~200 cal</span><span class="badge b-blue">peak block</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Greek yogurt + granola + honey</span><span class="rv">48g C · 17g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Banana + rice cakes + turkey slices</span><span class="rv">40g C · 14g P</span></div></div>
+      </div>
+      <div class="macros"><div class="macro"><div class="macro-val">3,800</div><div class="macro-lbl">calories</div></div><div class="macro"><div class="macro-val">~198g</div><div class="macro-lbl">protein</div></div><div class="macro"><div class="macro-val">~440g</div><div class="macro-lbl">carbs</div></div><div class="macro"><div class="macro-val">~55g</div><div class="macro-lbl">fat</div></div></div>
+    </div>
+
+    <!-- N-FRI -->
+    <div id="n-fri" class="day-page">
+      <div class="note n-blue">Biggest training day. Upper pull + 2hr long session. Shake post-training 12:30pm. Push to ~4,000 cal today.</div>
+      <div class="lbl">7:15am — big pre-training breakfast</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">7:15am</span><span class="c-name">Big morning shake + OJ</span><span class="c-cal">~1,000 cal</span><span class="badge b-green">pre-training</span></div>
+        <div class="card-body">
+          <div class="toggle"><div class="tog-btn active" onclick="tog(this,'tf-b1')">Liquid</div><div class="tog-btn" onclick="tog(this,'tf-b2')">Real food instead</div></div>
+          <div id="tf-b1" class="tog-content active"><div class="row"><span class="rn">Biggest morning shake + OJ (16oz)</span><span class="rv">~1,000 cal</span></div></div>
+          <div id="tf-b2" class="tog-content"><div class="row"><span class="rn">Oatmeal (2 cups dry) + banana + honey + Greek yogurt (1 cup)</span><span class="rv">800 cal · 35g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">3 bagels + banana + low fat cream cheese</span><span class="rv">800 cal · 22g P</span></div></div>
+        </div>
+      </div>
+      <div class="lbl">During long session</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-name">Mid-training fuel</span><span class="c-cal">~200 cal</span><span class="badge b-amber">if 90+ min</span></div>
+        <div class="card-body"><div class="row"><span class="rn">2 energy gels OR sports drink (16oz) OR 5 dates</span><span class="rv">~50g C</span></div><div class="tip">Non-negotiable if you go over 90 min. You will bonk without this.</div></div>
+      </div>
+      <div class="lbl">12:30pm — post-training shake</div>
+      <div class="shake-inline"><b>Most critical shake of the week — drink immediately after finishing</b><span>1,050 cal · 115g protein · 88g carbs · 25g fat</span><em>You just did 3+ hours of training. Non-negotiable.</em></div>
+      <div class="lbl">1:30pm — recovery lunch</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">1:30pm</span><span class="c-name">Recovery lunch</span><span class="c-cal">~750 cal</span><span class="badge b-purple">real meal 1</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Salmon (6oz) + white rice (2.5 cups) + edamame + soy sauce</span><span class="rv">115g C · 52g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Chicken burrito bowl — rice (2.5 cups) + chicken (6oz) + black beans + corn + salsa</span><span class="rv">120g C · 55g P</span></div></div>
+      </div>
+      <div class="lbl">5:30pm — dinner</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">5:30pm</span><span class="c-name">Dinner</span><span class="c-cal">~700 cal</span><span class="badge b-purple">real meal 2</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Sushi — salmon/tuna rolls (3 rolls) + miso soup + edamame</span><span class="rv">90g C · 40g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Shrimp tacos (3, low fat tortillas) + rice + salsa + lime</span><span class="rv">95g C · 42g P</span></div></div>
+      </div>
+      <div class="macros"><div class="macro"><div class="macro-val">~4,000</div><div class="macro-lbl">calories</div></div><div class="macro"><div class="macro-val">~210g</div><div class="macro-lbl">protein</div></div><div class="macro"><div class="macro-val">~460g</div><div class="macro-lbl">carbs</div></div><div class="macro"><div class="macro-val">~58g</div><div class="macro-lbl">fat</div></div></div>
+    </div>
+
+    <!-- N-SAT -->
+    <div id="n-sat" class="day-page">
+      <div class="note n-pink">Full body + cheat meal tonight. Shake post-gym 11:30am. Hit protein early so cheat meal fits guilt-free.</div>
+      <div class="lbl">9:00am — breakfast</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">9:00am</span><span class="c-name">Breakfast</span><span class="c-cal">~750 cal</span><span class="badge b-green">pre-gym</span></div>
+        <div class="card-body">
+          <div class="toggle"><div class="tog-btn active" onclick="tog(this,'ts-b1')">Liquid</div><div class="tog-btn" onclick="tog(this,'ts-b2')">Real food instead</div></div>
+          <div id="ts-b1" class="tog-content active"><div class="row"><span class="rn">Any morning shake option</span><span class="rv">~750 cal</span></div></div>
+          <div id="ts-b2" class="tog-content"><div class="row"><span class="rn">Protein French toast — 3 slices bread + protein batter + maple syrup + banana</span><span class="rv">650 cal · 38g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Big smoothie bowl — banana + strawberries + mango + granola + honey</span><span class="rv">650 cal · 12g P</span></div></div>
+        </div>
+      </div>
+      <div class="lbl">11:30am — post-gym shake</div>
+      <div class="shake-inline"><b>Post-workout shake — right after full body session</b><span>1,050 cal · 115g protein · 88g carbs · 25g fat</span></div>
+      <div class="lbl">12:15pm — SIE lunch</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">12:15pm</span><span class="c-name">Lunch</span><span class="c-cal">~600 cal</span><span class="badge b-purple">real meal 1</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Chicken (6oz) + white rice (2 cups) + roasted veggies + hot sauce</span><span class="rv">92g C · 50g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Tuna (2 cans) + rice (2 cups) + cucumber + low fat mayo</span><span class="rv">90g C · 54g P</span></div></div>
+      </div>
+      <div class="lbl">6:00 – 7:00pm — cheat meal</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">6:00 – 7:00pm</span><span class="c-name">Cheat meal — earned</span><span class="c-cal">~900 cal</span><span class="badge b-pink">weekly cheat</span></div>
+        <div class="card-body"><div class="opt">Pick one and fully enjoy it</div><div class="row"><span class="rn">Burger + fries</span><span class="rv">~90g C · 35g P · 30g F</span></div><div class="row"><span class="rn">Pizza (3 slices)</span><span class="rv">~90g C · 36g P · 24g F</span></div><div class="row"><span class="rn">Chipotle burrito — no restrictions</span><span class="rv">~85g C · 45g P · 22g F</span></div><div class="row"><span class="rn">Sushi + appetizers + dessert</span><span class="rv">~100g C · 40g P · 15g F</span></div><div class="tip">You trained 6 days, ran miles, hit your SIE blocks. Eat it with your gf — don't track it, don't feel guilty.</div></div>
+      </div>
+      <div class="macros"><div class="macro"><div class="macro-val">~3,800</div><div class="macro-lbl">calories</div></div><div class="macro"><div class="macro-val">~200g</div><div class="macro-lbl">protein</div></div><div class="macro"><div class="macro-val">~400g</div><div class="macro-lbl">carbs</div></div><div class="macro"><div class="macro-val">~60g</div><div class="macro-lbl">fat</div></div></div>
+    </div>
+
+    <!-- N-SUN -->
+    <div id="n-sun" class="day-page">
+      <div class="note n-green">Active recovery. Shake mid-afternoon. Best day to batch cook rice + chicken for the whole week.</div>
+      <div class="lbl">9:30am — slow breakfast</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">9:30am</span><span class="c-name">Breakfast</span><span class="c-cal">~750 cal</span><span class="badge b-green">morning</span></div>
+        <div class="card-body">
+          <div class="toggle"><div class="tog-btn active" onclick="tog(this,'tsu-b1')">Liquid</div><div class="tog-btn" onclick="tog(this,'tsu-b2')">Real food instead</div></div>
+          <div id="tsu-b1" class="tog-content active"><div class="row"><span class="rn">Any morning shake option</span><span class="rv">~750 cal</span></div></div>
+          <div id="tsu-b2" class="tog-content"><div class="row"><span class="rn">Acai bowl — acai + banana + granola + honey + strawberries + Greek yogurt</span><span class="rv">650 cal · 25g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Oatmeal (1.5 cups) + banana + honey + berries + cinnamon</span><span class="rv">650 cal · 14g P</span></div><div class="tip">Sunday breakfast — sit down, eat slowly. No rush.</div></div>
+        </div>
+      </div>
+      <div class="lbl">12:00pm — SIE practice snack</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">12:00pm</span><span class="c-name">Practice Qs snack</span><span class="c-cal">~250 cal</span><span class="badge b-amber">SIE</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Apple + rice cakes (3) + low fat string cheese (2)</span><span class="rv">42g C · 14g P</span></div></div>
+      </div>
+      <div class="lbl">12:45pm — lunch (batch cook here)</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">12:45pm</span><span class="c-name">Lunch</span><span class="c-cal">~700 cal</span><span class="badge b-purple">real meal 1</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Baked chicken (7oz) + white rice (2 cups) + roasted broccoli + hot sauce</span><span class="rv">95g C · 55g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Turkey chili — lean turkey + beans + tomatoes + rice (big batch)</span><span class="rv">100g C · 50g P</span></div><div class="tip">Make extra and store for Mon/Tue/Wed.</div></div>
+      </div>
+      <div class="lbl">3:00pm — shake (recovery day)</div>
+      <div class="shake-inline"><b>Post-workout shake — mid-afternoon on recovery day</b><span>1,050 cal · 115g protein · 88g carbs · 25g fat</span></div>
+      <div class="lbl">6:00pm — dinner</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">6:00pm</span><span class="c-name">Dinner</span><span class="c-cal">~650 cal</span><span class="badge b-purple">real meal 2</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Salmon (5oz) + sweet potato + green beans + white rice (1 cup)</span><span class="rv">100g C · 40g P</span></div><div class="or">— or —</div><div class="row"><span class="rn">Shrimp stir fry (8oz) + white rice (2 cups) + veggies + low sodium soy</span><span class="rv">95g C · 50g P</span></div></div>
+      </div>
+      <div class="lbl">9:00pm — night snack</div>
+      <div class="card">
+        <div class="card-hdr"><span class="c-time">9:00pm</span><span class="c-name">Light night snack</span><span class="c-cal">~200 cal</span><span class="badge b-blue">light</span></div>
+        <div class="card-body"><div class="row"><span class="rn">Low fat popcorn + banana</span><span class="rv">~200 cal</span></div><div class="or">— or —</div><div class="row"><span class="rn">Rice cakes (3) + turkey slices + mustard</span><span class="rv">~200 cal · 22g P</span></div><div class="tip">Light tonight. Magnesium. Sleep by 12:30.</div></div>
+      </div>
+      <div class="macros"><div class="macro"><div class="macro-val">3,750</div><div class="macro-lbl">calories</div></div><div class="macro"><div class="macro-val">~198g</div><div class="macro-lbl">protein</div></div><div class="macro"><div class="macro-val">~425g</div><div class="macro-lbl">carbs</div></div><div class="macro"><div class="macro-val">~55g</div><div class="macro-lbl">fat</div></div></div>
+    </div>
+  </div>
+
+  <!-- SHAKE RECIPES -->
+  <div id="n-shakes" class="sub-page">
+    <div class="note n-green">Your main shake every day post-workout. Morning shakes replace breakfast. All recipes below.</div>
+    <div class="lbl">Post-workout shake (daily)</div>
+    <div class="card">
+      <div class="card-hdr"><span class="c-name">Post-workout shake (tweaked)</span><span class="c-cal">1,050 cal</span><span class="badge b-green">daily</span></div>
+      <div class="card-body"><div class="row"><span class="rn">Protein powder</span><span class="rv">1.5 scoops</span></div><div class="row"><span class="rn">Whole milk</span><span class="rv">1.5 cups</span></div><div class="row"><span class="rn">Oats (dry)</span><span class="rv">1 cup</span></div><div class="row"><span class="rn">Peanut butter</span><span class="rv">1 tbsp (was 2)</span></div><div class="row"><span class="rn">Collagen peptides</span><span class="rv">1 scoop</span></div><div class="row"><span class="rn">Banana (optional +100 cal)</span><span class="rv">1 medium</span></div></div>
+    </div>
+    <div class="macros"><div class="macro"><div class="macro-val">1,050</div><div class="macro-lbl">calories</div></div><div class="macro"><div class="macro-val">115g</div><div class="macro-lbl">protein</div></div><div class="macro"><div class="macro-val">88g</div><div class="macro-lbl">carbs</div></div><div class="macro"><div class="macro-val">25g</div><div class="macro-lbl">fat</div></div></div>
+    <div class="lbl" style="margin-top:16px">Morning shake — Option A</div>
+    <div class="card">
+      <div class="card-hdr"><span class="c-name">Greek yogurt berry blast</span><span class="c-cal">~720 cal</span><span class="badge b-blue">morning</span></div>
+      <div class="card-body"><div class="row"><span class="rn">Greek yogurt 0% fat</span><span class="rv">1.5 cups</span></div><div class="row"><span class="rn">Frozen mixed berries</span><span class="rv">1.5 cups</span></div><div class="row"><span class="rn">Banana</span><span class="rv">1 large</span></div><div class="row"><span class="rn">Honey</span><span class="rv">2 tbsp</span></div><div class="row"><span class="rn">Protein powder</span><span class="rv">1 scoop</span></div><div class="row"><span class="rn">Oat milk</span><span class="rv">1 cup</span></div><div class="mini-macros"><div class="mm"><div class="mm-val">720</div><div class="mm-lbl">cal</div></div><div class="mm"><div class="mm-val">55g</div><div class="mm-lbl">protein</div></div><div class="mm"><div class="mm-val">118g</div><div class="mm-lbl">carbs</div></div><div class="mm"><div class="mm-val">6g</div><div class="mm-lbl">fat</div></div></div></div>
+    </div>
+    <div class="lbl">Morning shake — Option B</div>
+    <div class="card">
+      <div class="card-hdr"><span class="c-name">Banana oat muscle shake</span><span class="c-cal">~780 cal</span><span class="badge b-blue">morning</span></div>
+      <div class="card-body"><div class="row"><span class="rn">Banana</span><span class="rv">2 medium</span></div><div class="row"><span class="rn">Oats (dry, blended smooth)</span><span class="rv">0.75 cup</span></div><div class="row"><span class="rn">Protein powder</span><span class="rv">1.5 scoops</span></div><div class="row"><span class="rn">Peanut butter</span><span class="rv">1 tbsp</span></div><div class="row"><span class="rn">Whole milk</span><span class="rv">1.5 cups</span></div><div class="row"><span class="rn">Honey</span><span class="rv">1 tbsp</span></div><div class="mini-macros"><div class="mm"><div class="mm-val">780</div><div class="mm-lbl">cal</div></div><div class="mm"><div class="mm-val">68g</div><div class="mm-lbl">protein</div></div><div class="mm"><div class="mm-val">105g</div><div class="mm-lbl">carbs</div></div><div class="mm"><div class="mm-val">14g</div><div class="mm-lbl">fat</div></div></div></div>
+    </div>
+    <div class="lbl">Morning shake — Option C</div>
+    <div class="card">
+      <div class="card-hdr"><span class="c-name">Mango oat milk smoothie</span><span class="c-cal">~700 cal</span><span class="badge b-blue">morning</span></div>
+      <div class="card-body"><div class="row"><span class="rn">Frozen mango chunks</span><span class="rv">2 cups</span></div><div class="row"><span class="rn">Banana</span><span class="rv">1 large</span></div><div class="row"><span class="rn">Oat milk</span><span class="rv">1.5 cups</span></div><div class="row"><span class="rn">Protein powder</span><span class="rv">1.5 scoops</span></div><div class="row"><span class="rn">Low fat granola (blended in)</span><span class="rv">0.5 cup</span></div><div class="row"><span class="rn">Honey</span><span class="rv">1 tbsp</span></div><div class="mini-macros"><div class="mm"><div class="mm-val">700</div><div class="mm-lbl">cal</div></div><div class="mm"><div class="mm-val">52g</div><div class="mm-lbl">protein</div></div><div class="mm"><div class="mm-val">120g</div><div class="mm-lbl">carbs</div></div><div class="mm"><div class="mm-val">8g</div><div class="mm-lbl">fat</div></div></div><div class="tip">Lowest protein of the 3 — add a Premier Protein on the side.</div></div>
+    </div>
+    <div class="lbl">Store-bought upgrades</div>
+    <div class="card"><div class="card-body">
+      <div class="row"><span class="rn">Fairlife chocolate milk (2 cups) — best post-cardio</span><span class="rv">340 cal · 26g P</span></div>
+      <div class="row"><span class="rn">Fairlife Core Power — replaces Premier Protein on campus</span><span class="rv">170 cal · 26g P</span></div>
+      <div class="row"><span class="rn">Orange juice (16oz) — drink with morning shake daily</span><span class="rv">220 cal · 52g C</span></div>
+      <div class="row"><span class="rn">Naked Juice green machine — every 2–3 days for vitamins</span><span class="rv">270 cal</span></div>
+      <div class="row"><span class="rn">Premier Protein — between meals, during SIE study</span><span class="rv">160 cal · 30g P</span></div>
+    </div></div>
+  </div>
+
+  <!-- REAL FOOD SWAPS -->
+  <div id="n-swaps" class="sub-page">
+    <div class="note n-blue">Want to eat instead of drink for a meal? Every option for every slot is here.</div>
+    <div class="lbl">Breakfast swaps (~650–800 cal)</div>
+    <div class="card">
+      <div class="card-hdr"><span class="c-name">Replace morning shake</span><span class="badge b-purple">swap</span></div>
+      <div class="card-body">
+        <div class="opt">Mon / Wed / Sat / Sun — have time to cook</div>
+        <div class="row"><span class="rn">Oatmeal (1.5 cups dry) + honey + banana + blueberries + Greek yogurt</span><span class="rv">650 cal · 31g P</span></div>
+        <div class="row"><span class="rn">Protein pancakes (1.5 scoops + banana + oat flour) + maple syrup</span><span class="rv">650 cal · 45g P</span></div>
+        <div class="row"><span class="rn">Smoothie bowl — banana + mango + granola + honey + berries + yogurt</span><span class="rv">650 cal · 25g P</span></div>
+        <div class="row"><span class="rn">Acai bowl + banana + granola + honey + strawberries + yogurt</span><span class="rv">650 cal · 25g P</span></div>
+        <div class="row"><span class="rn">Protein French toast — 3 slices + protein batter + maple syrup + banana</span><span class="rv">650 cal · 38g P</span></div>
+        <div class="opt">Tue / Thu / Fri — 8am class, need quick options</div>
+        <div class="row"><span class="rn">Overnight oats (prep night before) + banana + honey + berries</span><span class="rv">650 cal · 14g P</span></div>
+        <div class="row"><span class="rn">2 bagels + low fat cream cheese + banana</span><span class="rv">650 cal · 16g P</span></div>
+        <div class="row"><span class="rn">3 bagels + banana + OJ — Friday biggest fuel day only</span><span class="rv">800 cal · 22g P</span></div>
+        <div class="tip">When you swap breakfast to real food, add a Premier Protein shake on the side — protein drops from ~60g to ~15–30g otherwise.</div>
+      </div>
+    </div>
+    <div class="lbl">Lunch swaps (~650–750 cal)</div>
+    <div class="card">
+      <div class="card-hdr"><span class="c-name">Real food lunch options</span><span class="badge b-purple">swap</span></div>
+      <div class="card-body">
+        <div class="row"><span class="rn">White rice (2 cups) + chicken breast (6oz) + broccoli + soy sauce</span><span class="rv">700 cal · 50g P</span></div>
+        <div class="row"><span class="rn">Turkey rice bowl (5oz) + rice (2 cups) + black beans + salsa + corn</span><span class="rv">700 cal · 42g P</span></div>
+        <div class="row"><span class="rn">White rice (2 cups) + tuna (2 cans) + cucumber + low fat mayo (1 tsp)</span><span class="rv">650 cal · 52g P</span></div>
+        <div class="row"><span class="rn">Large wrap (low fat tortilla) + turkey (4oz) + white rice + salsa</span><span class="rv">650 cal · 38g P</span></div>
+        <div class="row"><span class="rn">Chicken (6oz) + white rice (2 cups) + corn + hot sauce</span><span class="rv">700 cal · 50g P</span></div>
+      </div>
+    </div>
+    <div class="lbl">Dinner swaps (~700–900 cal)</div>
+    <div class="card">
+      <div class="card-hdr"><span class="c-name">Real food dinner options</span><span class="badge b-purple">swap</span></div>
+      <div class="card-body">
+        <div class="opt">Standard dinners</div>
+        <div class="row"><span class="rn">Pasta (2 cups) + lean ground turkey (5oz) + marinara + side salad</span><span class="rv">750 cal · 44g P</span></div>
+        <div class="row"><span class="rn">Chicken stir fry — chicken (6oz) + rice (2.5 cups) + veggies + soy</span><span class="rv">800 cal · 52g P</span></div>
+        <div class="row"><span class="rn">Shrimp (8oz) + pasta (2 cups) + marinara + side salad</span><span class="rv">750 cal · 50g P</span></div>
+        <div class="row"><span class="rn">Salmon (5oz) + white rice (2 cups) + green beans</span><span class="rv">700 cal · 38g P</span></div>
+        <div class="opt">Big dinners — Thu and Fri</div>
+        <div class="row"><span class="rn">Pasta (2.5 cups) + turkey meatballs (5oz) + marinara + salad</span><span class="rv">850 cal · 46g P</span></div>
+        <div class="row"><span class="rn">Chicken burrito bowl — rice (2.5 cups) + chicken (6oz) + beans + corn + salsa</span><span class="rv">900 cal · 55g P</span></div>
+        <div class="opt">Treat yourself — Fri / Sat</div>
+        <div class="row"><span class="rn">Sushi — salmon/tuna rolls (3 rolls) + miso soup + edamame</span><span class="rv">700 cal · 40g P</span></div>
+        <div class="row"><span class="rn">Shrimp tacos (3, low fat tortillas) + rice + salsa + lime</span><span class="rv">700 cal · 42g P</span></div>
+      </div>
+    </div>
+    <div class="lbl">Night snack swaps (~200 cal)</div>
+    <div class="card">
+      <div class="card-hdr"><span class="c-name">Real food night snacks</span><span class="badge b-purple">swap</span></div>
+      <div class="card-body">
+        <div class="row"><span class="rn">Low fat popcorn + fruit</span><span class="rv">~200 cal · 3g P</span></div>
+        <div class="row"><span class="rn">Rice cakes (3) + turkey slices + mustard</span><span class="rv">~200 cal · 22g P</span></div>
+        <div class="row"><span class="rn">Greek yogurt (0% fat) + granola + honey</span><span class="rv">~250 cal · 17g P</span></div>
+        <div class="row"><span class="rn">Banana + rice cakes (2) + turkey slices</span><span class="rv">~220 cal · 14g P</span></div>
+        <div class="row"><span class="rn">Apple + low fat string cheese x2</span><span class="rv">~180 cal · 14g P</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GROCERY LIST -->
+  <div id="n-grocery" class="sub-page">
+    <div class="note n-green">Everything you could possibly need. Tap an item to check it off as you shop.</div>
+    <div class="g-ctrls"><button class="g-ctrl" onclick="checkAll()">Check all</button><button class="g-ctrl" onclick="clearAll()">Reset list</button></div>
+    <div class="g-section"><div class="g-title">Proteins</div><div class="g-items">
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Chicken breast</span><span class="g-note">bulk buy, freeze</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Ground turkey (93% lean+)</span><span class="g-note"></span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Salmon fillets</span><span class="g-note">fresh or frozen</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Shrimp (raw or cooked)</span><span class="g-note">frozen bag</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Tuna (canned in water)</span><span class="g-note">stock up — multiple cans</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Lean sirloin steak</span><span class="g-note">for Thu stir fry</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Turkey deli slices (low sodium)</span><span class="g-note"></span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Low fat string cheese</span><span class="g-note">snacks</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Greek yogurt 0% fat (large tub)</span><span class="g-note"></span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Protein powder (whey)</span><span class="g-note">need 1.5 scoops/day</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Collagen peptides powder</span><span class="g-note">for daily shake</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Edamame (frozen)</span><span class="g-note">Fri recovery meal</span></div>
+    </div></div>
+    <div class="g-section"><div class="g-title">Carbs and grains</div><div class="g-items">
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">White rice (large bag)</span><span class="g-note">your main carb</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Pasta (multiple boxes)</span><span class="g-note"></span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Oats, rolled dry (large canister)</span><span class="g-note">shakes + breakfast</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Plain bagels</span><span class="g-note">pre-gym snack</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Rice cakes (plain)</span><span class="g-note">snacks + pre-gym</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">White bread (sandwich)</span><span class="g-note">post-cardio fast carbs</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Low fat flour tortillas</span><span class="g-note">wraps + tacos</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Low fat granola</span><span class="g-note">shakes + yogurt</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Sweet potatoes</span><span class="g-note">Sun dinner</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Black beans (canned)</span><span class="g-note">rice bowls + chili</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Oat flour</span><span class="g-note">protein pancakes</span></div>
+    </div></div>
+    <div class="g-section"><div class="g-title">Fruits</div><div class="g-items">
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Bananas</span><span class="g-note">buy a lot — daily use</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Apples</span><span class="g-note">snacks</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Frozen mixed berries (large bag)</span><span class="g-note">morning shake A</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Frozen mango chunks (large bag)</span><span class="g-note">morning shake C</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Frozen strawberries</span><span class="g-note">smoothie bowls</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Blueberries (fresh or frozen)</span><span class="g-note">oatmeal + shakes</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Acai packs (frozen)</span><span class="g-note">bowl option</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Dates</span><span class="g-note">mid-training fuel on Fri</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Limes</span><span class="g-note">shrimp tacos</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Grapes or oranges</span><span class="g-note">snacks</span></div>
+    </div></div>
+    <div class="g-section"><div class="g-title">Vegetables</div><div class="g-items">
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Broccoli (fresh or frozen)</span><span class="g-note">eat with both meals daily</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Green beans</span><span class="g-note">sides</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Cucumber</span><span class="g-note">tuna bowls</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Bok choy</span><span class="g-note">Thu stir fry</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Frozen stir fry vegetables (bag)</span><span class="g-note">easy, no prep</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Corn (canned or frozen)</span><span class="g-note">rice bowls</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Bag salad mix (pre-washed)</span><span class="g-note">easiest fiber source</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Tomatoes (canned, diced)</span><span class="g-note">turkey chili</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Garlic (minced jar)</span><span class="g-note">cooking</span></div>
+    </div></div>
+    <div class="g-section"><div class="g-title">Dairy and liquids</div><div class="g-items">
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Whole milk (half gallon)</span><span class="g-note">daily shake</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Oat milk (carton)</span><span class="g-note">morning shakes</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Orange juice (Tropicana, not from concentrate)</span><span class="g-note">drink with morning shake daily</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Fairlife chocolate milk (52oz jug)</span><span class="g-note">best post-cardio drink</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Fairlife Core Power bottles</span><span class="g-note">replaces Premier Protein on campus</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Premier Protein shakes (case)</span><span class="g-note">between meals</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Low fat cream cheese</span><span class="g-note">bagels</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Naked Juice green machine</span><span class="g-note">every 2–3 days for vitamins</span></div>
+    </div></div>
+    <div class="g-section"><div class="g-title">Condiments and pantry</div><div class="g-items">
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Low sodium soy sauce</span><span class="g-note">stir frys + rice bowls</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Salsa</span><span class="g-note">rice bowls</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Hot sauce</span><span class="g-note">on everything</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Marinara sauce (low fat)</span><span class="g-note">pasta nights</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Peanut butter</span><span class="g-note">daily shake + morning shake B</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Honey</span><span class="g-note">shakes + oatmeal — use a lot</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Maple syrup</span><span class="g-note">pancakes + French toast</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Low fat mayo</span><span class="g-note">tuna bowls</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Mustard</span><span class="g-note">night snack wraps</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Cinnamon</span><span class="g-note">oatmeal</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Low fat microwave popcorn</span><span class="g-note">night snack</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Olive oil (small bottle)</span><span class="g-note">cooking — use minimal</span></div>
+    </div></div>
+    <div class="g-section"><div class="g-title">Training and supplements</div><div class="g-items">
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Magnesium glycinate</span><span class="g-note">every night before sleep</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Vitamin D3 + K2</span><span class="g-note">morning</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Fish oil</span><span class="g-note">morning</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Zinc</span><span class="g-note">morning</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Ashwagandha</span><span class="g-note">morning — take consistently</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Energy gels (Gu or similar)</span><span class="g-note">long Friday sessions over 90 min</span></div>
+      <div class="g-item" onclick="toggleItem(this)"><div class="g-check"></div><span class="g-name">Electrolyte packets or sports drink</span><span class="g-note">morning hydration + long sessions</span></div>
+    </div></div>
+  </div>
+
+  <!-- TARGETS -->
+  <div id="n-targets" class="sub-page">
+    <div class="note n-green">Why these numbers, the liquid limits, and what to watch out for.</div>
+    <div class="lbl">Why 3,800 calories</div>
+    <div class="card"><div class="card-body">
+      <div class="row"><span class="rn">Maintenance (6ft, 162 lbs, very active)</span><span class="rv">~3,100 cal</span></div>
+      <div class="row"><span class="rn">Muscle building surplus</span><span class="rv">+300–500 cal</span></div>
+      <div class="row"><span class="rn">Extra burn on long cardio days</span><span class="rv">+400–600 cal</span></div>
+      <div class="row"><span class="rn">Target to actually grow</span><span class="rv">3,700–3,900 cal</span></div>
+      <div class="tip">At 3,300 you were likely in a deficit on hard training days. At 3,800 you gain 0.5–1 lb/week — slow, lean bulk.</div>
+    </div></div>
+    <div class="lbl">Daily targets</div>
+    <div class="macros"><div class="macro"><div class="macro-val">3,800</div><div class="macro-lbl">calories</div></div><div class="macro"><div class="macro-val">200g</div><div class="macro-lbl">protein</div></div><div class="macro"><div class="macro-val">430g</div><div class="macro-lbl">carbs</div></div><div class="macro"><div class="macro-val">60g</div><div class="macro-lbl">fat</div></div></div>
+    <div class="lbl" style="margin-top:16px">Liquid limits</div>
+    <div class="card"><div class="card-body">
+      <div class="row"><span class="rn">Max blended shakes per day</span><span class="rv" style="color:var(--green-t);font-weight:700">2 max</span></div>
+      <div class="row"><span class="rn">Max store-bought shakes per day</span><span class="rv" style="color:var(--green-t);font-weight:700">2 max</span></div>
+      <div class="row"><span class="rn">Minimum real food meals per day</span><span class="rv" style="color:var(--green-t);font-weight:700">2 minimum</span></div>
+      <div class="tip">Beyond this you get gut issues from lack of fiber, missing vitamins, and muscles respond worse to liquid protein than whole food.</div>
+    </div></div>
+    <div class="lbl">Warning signs you are too liquid-heavy</div>
+    <div class="card">
+      <div class="card-hdr"><span class="c-name">Watch for these</span><span class="badge b-red">warning</span></div>
+      <div class="card-body">
+        <div class="row"><span class="rn">Bloating or gas all day</span><span class="rv">add more fiber</span></div>
+        <div class="row"><span class="rn">Hungry an hour after a shake</span><span class="rv">add oats or yogurt</span></div>
+        <div class="row"><span class="rn">Energy crashes mid-afternoon</span><span class="rv">add a real meal</span></div>
+        <div class="row"><span class="rn">Not gaining weight</span><span class="rv">swap a liquid for food</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+function showTop(id, btn) {
+  document.querySelectorAll('.top-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.top-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo(0, 0);
+}
+function showSub(id, btn, section) {
+  const panel = document.getElementById(section);
+  panel.querySelectorAll('.sub-page').forEach(p => p.classList.remove('active'));
+  panel.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  btn.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+}
+function showDay(id, btn) {
+  const parent = btn.closest('.sub-page') || btn.closest('.top-panel');
+  parent.querySelectorAll('.day-page').forEach(p => p.classList.remove('active'));
+  parent.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  btn.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+}
+function tog(btn, showId) {
+  const card = btn.closest('.card-body');
+  card.querySelectorAll('.tog-btn').forEach(b => b.classList.remove('active'));
+  card.querySelectorAll('.tog-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(showId).classList.add('active');
+}
+function toggleItem(item) {
+  item.classList.toggle('checked');
+  item.querySelector('.g-check').classList.toggle('done');
+}
+function checkAll() {
+  document.querySelectorAll('.g-item').forEach(item => {
+    item.classList.add('checked');
+    item.querySelector('.g-check').classList.add('done');
+  });
+}
+function clearAll() {
+  document.querySelectorAll('.g-item').forEach(item => {
+    item.classList.remove('checked');
+    item.querySelector('.g-check').classList.remove('done');
+  });
+}
+</script>
+</body>
+</html>
